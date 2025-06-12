@@ -597,6 +597,8 @@
         title: OLMoE
       - local: model_doc/open-llama
         title: Open-Llama
+      - local: model_doc/opensci
+        title: OpenSci
       - local: model_doc/opt
         title: OPT
       - local: model_doc/pegasus
@@ -1132,4 +1134,3 @@
       title: Environment Variables
     title: Reference
   title: API
-
