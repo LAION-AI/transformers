@@ -197,7 +197,6 @@ def eager_attention_forward(
     return attn_output, attn_weights
 
 
-# Copied from transformers.models.llama.modeling_llama.LlamaAttention with Llama->OpenSci
 class OpenSciAttention(nn.Module):
     """Multi-headed attention from 'Attention Is All You Need' paper"""
 
@@ -223,6 +222,10 @@ class OpenSciAttention(nn.Module):
         self.o_proj = nn.Linear(
             config.num_attention_heads * self.head_dim, config.hidden_size, bias=config.attention_bias
         )
+        self.qk_layernorm = config.qk_layernorm
+        if self.qk_layernorm:
+            self.q_layernorm = OpenSciRMSNorm(config.head_dim, eps=config.rms_norm_eps)
+            self.k_layernorm = OpenSciRMSNorm(config.head_dim, eps=config.rms_norm_eps)
 
     def forward(
         self,
@@ -240,6 +243,9 @@ class OpenSciAttention(nn.Module):
         key_states = self.k_proj(hidden_states).view(hidden_shape).transpose(1, 2)
         value_states = self.v_proj(hidden_states).view(hidden_shape).transpose(1, 2)
 
+        if self.qk_layernorm:
+            query_states = self.q_layernorm(query_states)
+            key_states = self.k_layernorm(key_states)
         cos, sin = position_embeddings
         query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin)
 
@@ -693,7 +699,6 @@ class OpenSciForSequenceClassification(OpenSciPreTrainedModel):
 
 
 @auto_docstring
-# Copied from transformers.models.llama.modeling_llama.LlamaForQuestionAnswering with Llama->OpenSci
 class OpenSciForQuestionAnswering(OpenSciPreTrainedModel):
     base_model_prefix = "transformer"
 
@@ -757,7 +762,6 @@ class OpenSciForQuestionAnswering(OpenSciPreTrainedModel):
 
 
 @auto_docstring
-# Copied from transformers.models.llama.modeling_llama.LlamaForTokenClassification with Llama->OpenSci
 class OpenSciForTokenClassification(OpenSciPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)

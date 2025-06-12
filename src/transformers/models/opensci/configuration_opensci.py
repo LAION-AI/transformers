@@ -27,8 +27,8 @@ class OpenSciConfig(PretrainedConfig):
     r"""
     This is the configuration class to store the configuration of a [`OpenSciModel`]. It is used to instantiate an OpenSci
     model according to the specified arguments, defining the model architecture. Instantiating a configuration with the
-    defaults will yield a similar configuration to that of the OpenSci-7B.
-    e.g. [meta-opensci/OpenSci-2-7b-hf](https://huggingface.co/meta-opensci/OpenSci-2-7b-hf)
+    defaults will yield a similar configuration to that of the OpenSci-1.7b.
+    e.g. [open-sci/OpenSci-2-1.7b-hf](https://huggingface.co/open-sci/OpenSci-2-1.7b-hf)
 
     Configuration objects inherit from [`PretrainedConfig`] and can be used to control the model outputs. Read the
     documentation from [`PretrainedConfig`] for more information.
@@ -130,10 +130,10 @@ class OpenSciConfig(PretrainedConfig):
     ```python
     >>> from transformers import OpenSciModel, OpenSciConfig
 
-    >>> # Initializing a OpenSci opensci-7b style configuration
+    >>> # Initializing a OpenSci opensci-1.7b style configuration
     >>> configuration = OpenSciConfig()
 
-    >>> # Initializing a model from the opensci-7b style configuration
+    >>> # Initializing a model from the opensci-1.7b style configuration
     >>> model = OpenSciModel(configuration)
 
     >>> # Accessing the model configuration
@@ -144,10 +144,10 @@ class OpenSciConfig(PretrainedConfig):
     keys_to_ignore_at_inference = ["past_key_values"]
     # Default tensor parallel plan for base model `OpenSciModel`
     base_model_tp_plan = {
-        "layers.*.self_attn.q_proj": "colwise",
-        "layers.*.self_attn.k_proj": "colwise",
-        "layers.*.self_attn.v_proj": "colwise",
-        "layers.*.self_attn.o_proj": "rowwise",
+        "layers.*.self_attn.q_proj": "colwise_rep",
+        "layers.*.self_attn.k_proj": "colwise_rep",
+        "layers.*.self_attn.v_proj": "colwise_rep",
+        "layers.*.self_attn.o_proj": "colwise_rep",
         "layers.*.mlp.gate_proj": "colwise",
         "layers.*.mlp.up_proj": "colwise",
         "layers.*.mlp.down_proj": "rowwise",
@@ -160,28 +160,28 @@ class OpenSciConfig(PretrainedConfig):
 
     def __init__(
         self,
-        vocab_size=32000,
-        hidden_size=4096,
-        intermediate_size=11008,
-        num_hidden_layers=32,
+        vocab_size=50304,
+        hidden_size=2048,
+        intermediate_size=8192,
+        num_hidden_layers=24,
         num_attention_heads=32,
-        num_key_value_heads=None,
+        num_key_value_heads=32,
         hidden_act="silu",
-        max_position_embeddings=2048,
+        max_position_embeddings=4096,
         initializer_range=0.02,
-        rms_norm_eps=1e-6,
+        rms_norm_eps=1e-5,
         use_cache=True,
         pad_token_id=None,
-        bos_token_id=1,
-        eos_token_id=2,
+        bos_token_id=0,
+        eos_token_id=0,
         pretraining_tp=1,
-        tie_word_embeddings=False,
+        tie_word_embeddings=True,
         rope_theta=10000.0,
         rope_scaling=None,
-        attention_bias=False,
+        attention_bias=True,
         attention_dropout=0.0,
-        mlp_bias=False,
-        head_dim=None,
+        mlp_bias=True,
+        head_dim=64,
         **kwargs,
     ):
         self.vocab_size = vocab_size
