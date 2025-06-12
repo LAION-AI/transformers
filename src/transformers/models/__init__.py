@@ -220,6 +220,7 @@ if TYPE_CHECKING:
     from .omdet_turbo import *
     from .oneformer import *
     from .openai import *
+    from .opensci import *
     from .opt import *
     from .owlv2 import *
     from .owlvit import *
